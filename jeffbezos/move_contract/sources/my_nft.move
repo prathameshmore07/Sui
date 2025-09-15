@@ -1,5 +1,5 @@
-// Replace 0xYOUR_ADDRESS with your actual Sui address before publishing.
-module 0xYOUR_ADDRESS::my_nft {
+/// The main NFT contract.
+module my_nft::my_nft {
     use sui::object::{Self, ID, UID};
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
@@ -7,7 +7,7 @@ module 0xYOUR_ADDRESS::my_nft {
     use sui::event;
 
     // ===============
-    // Errors (NEW: Added a new error code)
+    // Errors
     // ===============
     const ENameCannotBeEmpty: u64 = 1;
 
@@ -43,11 +43,8 @@ module 0xYOUR_ADDRESS::my_nft {
         image_url: String,
         ctx: &mut TxContext
     ) {
-        // --- HARDENING CHECK (NEW) ---
-        // Ensure the name string is not empty. If it is, the transaction will
-        // safely abort with the ENameCannotBeEmpty error code.
+        // Hardening Check: Ensure the name is not empty.
         assert!(std::string::length(&name) > 0, ENameCannotBeEmpty);
-        // -----------------------------
 
         let sender = tx_context::sender(ctx);
         let nft = MyNFT {
@@ -66,13 +63,13 @@ module 0xYOUR_ADDRESS::my_nft {
         transfer::transfer(nft, sender);
     }
 
-    /// Burns (permanently destroys) an NFT. This function is inherently safe.
+    /// Burns (permanently destroys) an NFT.
     public entry fun burn(nft: MyNFT) {
         let MyNFT { id, name: _, description: _, image_url: _ } = nft;
         object::delete(id);
     }
 
-    /// Updates the description of an NFT. This function is inherently safe.
+    /// Updates the description of an NFT.
     public entry fun update_description(
         nft: &mut MyNFT,
         new_description: String,
